@@ -90,22 +90,22 @@ echo_npm_postinstall() {
   cath << EOF
 npm package has been installed.
 
-Extend your path to use code-server-poc:
+Extend your path to use code-server:
   PATH="$NPM_BIN_DIR:\$PATH"
 Then run with:
-  code-server-poc
+  code-server
 EOF
 }
 
 echo_standalone_postinstall() {
   echoh
   cath << EOF
-Standalone release has been installed into $STANDALONE_INSTALL_PREFIX/lib/code-server-poc-$VERSION
+Standalone release has been installed into $STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION
 
 Extend your path to use code-server:
   PATH="$STANDALONE_INSTALL_PREFIX/bin:\$PATH"
 Then run with:
-  code-server-poc
+  code-server
 EOF
 }
 
@@ -137,7 +137,7 @@ echo_coder_postinstall() {
 }
 
 main() {
-  echo "Using latest install.sh from code-server-poc (standalone default)"
+  echo "Using latest install.sh from code-server (standalone default)"
 
   if [ "${TRACE-}" ]; then
     set -x
@@ -362,8 +362,8 @@ install_deb() {
   echoh
 
   fetch "https://github.com/lavanyaburlagadda1807/code-server-poc/releases/download/v$VERSION/code-server-poc_${VERSION}_$ARCH.deb" \
-    "$CACHE_DIR/code-server-poc_${VERSION}_$ARCH.deb"
-  sudo_sh_c dpkg -i "$CACHE_DIR/code-server-poc_${VERSION}_$ARCH.deb"
+    "$CACHE_DIR/code-server_${VERSION}_$ARCH.deb"
+  sudo_sh_c dpkg -i "$CACHE_DIR/code-server_${VERSION}_$ARCH.deb"
 
   echo_systemd_postinstall deb
 }
@@ -373,8 +373,8 @@ install_rpm() {
   echoh
 
   fetch "https://github.com/lavanyaburlagadda1807/code-server-poc/releases/download/v$VERSION/code-server-poc-$VERSION-$ARCH.rpm" \
-    "$CACHE_DIR/code-server-poc-$VERSION-$ARCH.rpm"
-  sudo_sh_c rpm -U "$CACHE_DIR/code-server-poc-$VERSION-$ARCH.rpm"
+    "$CACHE_DIR/code-server-$VERSION-$ARCH.rpm"
+  sudo_sh_c rpm -U "$CACHE_DIR/code-server-$VERSION-$ARCH.rpm"
 
   echo_systemd_postinstall rpm
 }
@@ -399,7 +399,7 @@ install_standalone() {
   echoh
 
   fetch "https://github.com/lavanyaburlagadda1807/code-server-poc/archive/refs/tags/$VERSION.tar.gz" \
-    "$CACHE_DIR/code-server-poc-$VERSION.tar.gz"
+    "$CACHE_DIR/code-server-$VERSION.tar.gz"
 
   # -w only works if the directory exists so try creating it first. If this
   # fails we can ignore the error as the -w check will then swap us to sudo.
@@ -410,17 +410,17 @@ install_standalone() {
     sh_c="sudo_sh_c"
   fi
 
-  if [ -e "$STANDALONE_INSTALL_PREFIX/lib/code-server-poc-$VERSION" ]; then
+  if [ -e "$STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION" ]; then
     echoh
-    echoh "code-server-poc-$VERSION is already installed at $STANDALONE_INSTALL_PREFIX/lib/code-server-poc-$VERSION"
+    echoh "code-server-$VERSION is already installed at $STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION"
     echoh "Remove it to reinstall."
     exit 0
   fi
 
   "$sh_c" mkdir -p "$STANDALONE_INSTALL_PREFIX/lib" "$STANDALONE_INSTALL_PREFIX/bin"
-  "$sh_c" tar -C "$STANDALONE_INSTALL_PREFIX/lib" -xzf "$CACHE_DIR/code-server-poc-$VERSION.tar.gz"
-  "$sh_c" mv -f "$STANDALONE_INSTALL_PREFIX/lib/code-server-poc-$VERSION" "$STANDALONE_INSTALL_PREFIX/lib/code-server-poc-$VERSION"
-  "$sh_c" ln -fs "$STANDALONE_INSTALL_PREFIX/lib/code-server-poc-$VERSION/bin/code-server-poc" "$STANDALONE_INSTALL_PREFIX/bin/code-server-poc"
+  "$sh_c" tar -C "$STANDALONE_INSTALL_PREFIX/lib" -xzf "$CACHE_DIR/code-server-$VERSION.tar.gz"
+  "$sh_c" mv -f "$STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION" "$STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION"
+  "$sh_c" ln -fs "$STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION/bin/code-server" "$STANDALONE_INSTALL_PREFIX/bin/code-server"
 
   echo_standalone_postinstall
 }
@@ -438,7 +438,7 @@ install_npm() {
     fi
     echoh "Installing with npm."
     echoh
-    "$sh_c" "$NPM_PATH" install -g "code-server-poc@$VERSION" --unsafe-perm
+    "$sh_c" "$NPM_PATH" install -g "code-server@$VERSION" --unsafe-perm
     NPM_BIN_DIR="\$($NPM_PATH bin -g)" echo_npm_postinstall
     return
   fi
@@ -580,11 +580,11 @@ sudo_sh_c() {
 
 echo_cache_dir() {
   if [ "${XDG_CACHE_HOME-}" ]; then
-    echo "$XDG_CACHE_HOME/code-server-poc"
+    echo "$XDG_CACHE_HOME/code-server"
   elif [ "${HOME-}" ]; then
-    echo "$HOME/.cache/code-server-poc"
+    echo "$HOME/.cache/code-server"
   else
-    echo "/tmp/code-server-poc-cache"
+    echo "/tmp/code-server-cache"
   fi
 }
 
