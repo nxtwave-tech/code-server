@@ -29,7 +29,7 @@
 ## Requirements
 
 The prerequisites for contributing to code-server are almost the same as those
-for [VS Code](https://github.com/Microsoft/vscode/wiki/How-to-Contribute#prerequisites).
+for [VS Code](https://github.com/lavanyaburlagadda1807/vscode-poc/wiki/How-to-Contribute#prerequisites).
 Here is what is needed:
 
 - `node` v22.x
@@ -62,7 +62,7 @@ install the following dependencies:
 sudo apt-get install build-essential g++ libx11-dev libxkbfile-dev libsecret-1-dev libkrb5-dev python-is-python3
 ```
 
-These are required by Code. See [their Wiki](https://github.com/microsoft/vscode/wiki/How-to-Contribute#prerequisites)
+These are required by Code. See [their Wiki](https://github.com/lavanyaburlagadda1807/vscode-poc/wiki/How-to-Contribute#prerequisites)
 for more information.
 
 ## Development workflow

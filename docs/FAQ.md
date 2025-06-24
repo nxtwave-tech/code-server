@@ -127,7 +127,7 @@ These are the closed-source extensions that are presently unavailable:
    implement something similar (see
    [#33](https://github.com/coder/code-server/issues/33))
 1. [Remote Extensions (SSH, Containers,
-   WSL)](https://github.com/microsoft/vscode-remote-release). We may implement
+   WSL)](https://github.com/lavanyaburlagadda1807/vscode-remote-release). We may implement
    these again at some point, see
    ([#1315](https://github.com/coder/code-server/issues/1315)).
 
