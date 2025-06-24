@@ -398,7 +398,7 @@ install_standalone() {
   echoh "Installing v$VERSION of the $ARCH release from GitHub."
   echoh
 
-  fetch "https://github.com/lavanyaburlagadda1807/code-server-poc/archive/refs/tags/v$VERSION.tar.gz" \
+  fetch "https://github.com/lavanyaburlagadda1807/code-server-poc/archive/refs/tags/$VERSION.tar.gz" \
     "$CACHE_DIR/code-server-poc-$VERSION.tar.gz"
 
   # -w only works if the directory exists so try creating it first. If this
