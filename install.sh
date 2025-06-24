@@ -137,6 +137,8 @@ echo_coder_postinstall() {
 }
 
 main() {
+  echo "Using latest install.sh from code-server-poc (standalone default)"
+
   if [ "${TRACE-}" ]; then
     set -x
   fi
