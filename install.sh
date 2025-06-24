@@ -396,8 +396,8 @@ install_standalone() {
   echoh "Installing v$VERSION of the $ARCH release from GitHub."
   echoh
 
-  fetch "https://github.com/lavanyaburlagadda1807/code-server-poc/releases/download/v$VERSION/code-server-poc-$VERSION-$OS-$ARCH.tar.gz" \
-    "$CACHE_DIR/code-server-poc-$VERSION-$OS-$ARCH.tar.gz"
+  fetch "https://github.com/lavanyaburlagadda1807/code-server-poc/archive/refs/tags/v$VERSION.tar.gz" \
+    "$CACHE_DIR/code-server-poc-$VERSION.tar.gz"
 
   # -w only works if the directory exists so try creating it first. If this
   # fails we can ignore the error as the -w check will then swap us to sudo.
@@ -416,8 +416,8 @@ install_standalone() {
   fi
 
   "$sh_c" mkdir -p "$STANDALONE_INSTALL_PREFIX/lib" "$STANDALONE_INSTALL_PREFIX/bin"
-  "$sh_c" tar -C "$STANDALONE_INSTALL_PREFIX/lib" -xzf "$CACHE_DIR/code-server-poc-$VERSION-$OS-$ARCH.tar.gz"
-  "$sh_c" mv -f "$STANDALONE_INSTALL_PREFIX/lib/code-server-poc-$VERSION-$OS-$ARCH" "$STANDALONE_INSTALL_PREFIX/lib/code-server-poc-$VERSION"
+  "$sh_c" tar -C "$STANDALONE_INSTALL_PREFIX/lib" -xzf "$CACHE_DIR/code-server-poc-$VERSION.tar.gz"
+  "$sh_c" mv -f "$STANDALONE_INSTALL_PREFIX/lib/code-server-poc-$VERSION" "$STANDALONE_INSTALL_PREFIX/lib/code-server-poc-$VERSION"
   "$sh_c" ln -fs "$STANDALONE_INSTALL_PREFIX/lib/code-server-poc-$VERSION/bin/code-server-poc" "$STANDALONE_INSTALL_PREFIX/bin/code-server-poc"
 
   echo_standalone_postinstall
