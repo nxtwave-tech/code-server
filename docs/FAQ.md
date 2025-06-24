@@ -188,7 +188,7 @@ Though you can technically use Microsoft's marketplace in this manner, we
 strongly discourage you from doing so since this is [against their Terms of Use](#why-cant-code-server-use-microsofts-extension-marketplace).
 
 For further information, see [this
-discussion](https://github.com/microsoft/vscode/issues/31168#issue-244533026)
+discussion](https://github.com/lavanyaburlagadda1807/vscode-poc/issues/31168#issue-244533026)
 regarding the use of the Microsoft URLs in forks, as well as [VSCodium's
 docs](https://github.com/VSCodium/vscodium/blob/master/DOCS.md#extensions--marketplace).
 
