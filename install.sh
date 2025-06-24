@@ -419,7 +419,7 @@ install_standalone() {
 
   "$sh_c" mkdir -p "$STANDALONE_INSTALL_PREFIX/lib" "$STANDALONE_INSTALL_PREFIX/bin"
   "$sh_c" tar -C "$STANDALONE_INSTALL_PREFIX/lib" -xzf "$CACHE_DIR/code-server-$VERSION.tar.gz"
-  "$sh_c" mv -f "$STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION" "$STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION"
+  "$sh_c" mv -f "$STANDALONE_INSTALL_PREFIX/lib/code-server-poc-$VERSION" "$STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION"
   "$sh_c" ln -fs "$STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION/bin/code-server" "$STANDALONE_INSTALL_PREFIX/bin/code-server"
 
   echo_standalone_postinstall
