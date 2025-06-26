@@ -23,7 +23,7 @@ The remote host must have internet access.
 ${not_curl_usage-}
 Usage:
 
-  $arg0 [--dry-run] [--version X.X.X] [--edge] [--method standalone] \
+  $arg0 [--dry-run] [--version X.X.X] [--edge] [--method detect] \
         [--prefix ~/.local] [--rsh ssh] [user@host]
 
   --dry-run
@@ -227,7 +227,7 @@ main() {
     return
   fi
 
-  METHOD="${METHOD-standalone}"
+  METHOD="${METHOD-detect}"
   if [ "$METHOD" != detect ] && [ "$METHOD" != standalone ]; then
     echoerr "Unknown install method \"$METHOD\""
     echoerr "Run with --help to see usage."
