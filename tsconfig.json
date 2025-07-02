@@ -26,5 +26,5 @@
     "resolveJsonModule": true
   },
   "include": ["./src/**/*"],
-  "exclude": ["/test", "/lib", "/ci", "/doc"]
+  "exclude": ["/test", "/lib", "/ci", "/doc", "./src/browser"]
 }
