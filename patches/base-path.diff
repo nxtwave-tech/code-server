@@ -36,7 +36,7 @@ Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench-dev.html
  
  		<!-- Disable pinch zooming -->
  		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-@@ -27,9 +27,9 @@
+@@ -27,12 +27,12 @@
  		<meta id="vscode-workbench-builtin-extensions" data-settings="{{WORKBENCH_BUILTIN_EXTENSIONS}}">
  
  		<!-- Workbench Icon/Manifest/CSS -->
@@ -48,8 +48,12 @@ Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench-dev.html
 +		<link rel="manifest" href="{{VS_BASE}}/manifest.json" crossorigin="use-credentials" />
  		<style id="vscode-css-modules" type="text/css" media="screen"></style>
  
+-		<script src="{{WORKBENCH_WEB_BASE_URL}}/_static/out/browser/inactivityTracker.js"></script>
++		<script src="{{BASE}}/_static/out/browser/inactivityTracker.js"></script>
+ 
  	</head>
-@@ -39,7 +39,7 @@
+ 
+@@ -41,7 +41,7 @@
  
  	<!-- Startup (do not modify order of script tags!) -->
  	<script>
@@ -73,7 +77,7 @@ Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench.html
  
  		<!-- Disable pinch zooming -->
  		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-@@ -24,9 +24,9 @@
+@@ -24,11 +24,11 @@
  		<meta id="vscode-workbench-auth-session" data-settings="{{WORKBENCH_AUTH_SESSION}}">
  
  		<!-- Workbench Icon/Manifest/CSS -->
@@ -84,8 +88,11 @@ Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench.html
 +		<link rel="alternate icon" href="{{BASE}}/_static/src/browser/media/favicon.ico" type="image/x-icon" />
 +		<link rel="manifest" href="{{VS_BASE}}/manifest.json" crossorigin="use-credentials" />
  		<link rel="stylesheet" href="{{WORKBENCH_WEB_BASE_URL}}/out/vs/code/browser/workbench/workbench.css">
- 
+-		<script src="{{WORKBENCH_WEB_BASE_URL}}/_static/out/browser/inactivityTracker.js"></script>
++		<script src="{{BASE}}/_static/out/browser/inactivityTracker.js"></script>
  	</head>
+ 
+ 	<body aria-label="">
 @@ -36,7 +36,7 @@
  
  	<!-- Startup (do not modify order of script tags!) -->
