@@ -33,12 +33,12 @@ Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench-dev.html
 -		<link rel="apple-touch-icon" sizes="512x512" href="/_static/src/browser/media/pwa-icon-512.png" />
 +		<link rel="apple-touch-icon" sizes="192x192" href="{{BASE}}/_static/src/browser/media/pwa-icon-192.png" />
 +		<link rel="apple-touch-icon" sizes="512x512" href="{{BASE}}/_static/src/browser/media/pwa-icon-512.png" />
- 
+
  		<!-- Disable pinch zooming -->
  		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 @@ -27,12 +27,12 @@
  		<meta id="vscode-workbench-builtin-extensions" data-settings="{{WORKBENCH_BUILTIN_EXTENSIONS}}">
- 
+
  		<!-- Workbench Icon/Manifest/CSS -->
 -		<link rel="icon" href="/_static/src/browser/media/favicon-dark-support.svg" />
 -		<link rel="alternate icon" href="/_static/src/browser/media/favicon.ico" type="image/x-icon" />
@@ -47,12 +47,12 @@ Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench-dev.html
 +		<link rel="alternate icon" href="{{BASE}}/_static/src/browser/media/favicon.ico" type="image/x-icon" />
 +		<link rel="manifest" href="{{VS_BASE}}/manifest.json" crossorigin="use-credentials" />
  		<style id="vscode-css-modules" type="text/css" media="screen"></style>
- 
+
 -		<script src="{{WORKBENCH_WEB_BASE_URL}}/_static/out/browser/inactivityTracker.js"></script>
 +		<script src="{{BASE}}/_static/out/browser/inactivityTracker.js"></script>
- 
+
  	</head>
- 
+
 @@ -41,7 +41,7 @@
  
  	<!-- Startup (do not modify order of script tags!) -->
@@ -74,12 +74,12 @@ Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench.html
 -		<link rel="apple-touch-icon" sizes="512x512" href="/_static/src/browser/media/pwa-icon-512.png" />
 +		<link rel="apple-touch-icon" sizes="192x192" href="{{BASE}}/_static/src/browser/media/pwa-icon-192.png" />
 +		<link rel="apple-touch-icon" sizes="512x512" href="{{BASE}}/_static/src/browser/media/pwa-icon-512.png" />
- 
+
  		<!-- Disable pinch zooming -->
  		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 @@ -24,11 +24,11 @@
  		<meta id="vscode-workbench-auth-session" data-settings="{{WORKBENCH_AUTH_SESSION}}">
- 
+
  		<!-- Workbench Icon/Manifest/CSS -->
 -		<link rel="icon" href="/_static/src/browser/media/favicon-dark-support.svg" />
 -		<link rel="alternate icon" href="/_static/src/browser/media/favicon.ico" type="image/x-icon" />
@@ -91,10 +91,10 @@ Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench.html
 -		<script src="{{WORKBENCH_WEB_BASE_URL}}/_static/out/browser/inactivityTracker.js"></script>
 +		<script src="{{BASE}}/_static/out/browser/inactivityTracker.js"></script>
  	</head>
- 
+
  	<body aria-label="">
 @@ -36,7 +36,7 @@
- 
+
  	<!-- Startup (do not modify order of script tags!) -->
  	<script>
 -		const baseUrl = new URL('{{WORKBENCH_WEB_BASE_URL}}', window.location.origin).toString();
@@ -120,18 +120,18 @@ Index: code-server/lib/vscode/src/vs/server/node/webClientServer.ts
 +++ code-server/lib/vscode/src/vs/server/node/webClientServer.ts
 @@ -245,7 +245,9 @@ export class WebClientServer {
  		};
- 
+
  		// Prefix routes with basePath for clients
 -		const basePath = getFirstHeader('x-forwarded-prefix') || this._basePath;
 +		const rootBase = relativeRoot(getOriginalUrl(req))
 +		const vscodeBase = relativePath(getOriginalUrl(req))
 +		const basePath = vscodeBase || getFirstHeader('x-forwarded-prefix') || this._basePath;
- 
+
  		const queryConnectionToken = parsedUrl.query[connectionTokenQueryName];
  		if (typeof queryConnectionToken === 'string') {
 @@ -284,10 +286,14 @@ export class WebClientServer {
  		};
- 
+
  		const useTestResolver = (!this._environmentService.isBuilt && this._environmentService.args['use-test-resolver']);
 +		// For now we are getting the remote authority from the client to avoid
 +		// needing specific configuration for reverse proxies to work.  Set this to
@@ -146,7 +146,7 @@ Index: code-server/lib/vscode/src/vs/server/node/webClientServer.ts
  		if (!remoteAuthority) {
  			return serveError(req, res, 400, `Bad request.`);
 @@ -334,6 +340,7 @@ export class WebClientServer {
- 
+
  		const productConfiguration: Partial<Mutable<IProductConfiguration>> = {
  			codeServerVersion: this._productService.codeServerVersion,
 +			rootEndpoint: rootBase,
@@ -162,7 +162,7 @@ Index: code-server/lib/vscode/src/vs/server/node/webClientServer.ts
 +			BASE: rootBase,
 +			VS_BASE: basePath,
  		};
- 
+
  		// DEV ---------------------------------------------------------------------------------------
 @@ -424,7 +433,7 @@ export class WebClientServer {
  			'default-src \'self\';',
@@ -249,11 +249,11 @@ Index: code-server/lib/vscode/src/vs/base/common/product.ts
 --- code-server.orig/lib/vscode/src/vs/base/common/product.ts
 +++ code-server/lib/vscode/src/vs/base/common/product.ts
 @@ -57,6 +57,7 @@ export type ExtensionVirtualWorkspaceSup
- 
+
  export interface IProductConfiguration {
  	readonly codeServerVersion?: string
 +	readonly rootEndpoint?: string
- 
+
  	readonly version: string;
  	readonly date?: string;
 Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench.ts
@@ -263,17 +263,17 @@ Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench.ts
 @@ -332,7 +332,8 @@ class LocalStorageURLCallbackProvider ex
  			this.startListening();
  		}
- 
+
 -		return URI.parse(mainWindow.location.href).with({ path: this._callbackRoute, query: queryParams.join('&') });
 +		const path = (mainWindow.location.pathname + "/" + this._callbackRoute).replace(/\/\/+/g, "/");
 +		return URI.parse(mainWindow.location.href).with({ path: path, query: queryParams.join('&') });
  	}
- 
+
  	private startListening(): void {
 @@ -579,17 +580,6 @@ class WorkspaceProvider implements IWork
  	}
  }
- 
+
 -function readCookie(name: string): string | undefined {
 -	const cookies = document.cookie.split('; ');
 -	for (const cookie of cookies) {
@@ -286,7 +286,7 @@ Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench.ts
 -}
 -
  (function () {
- 
+
  	// Find config by checking for DOM
 @@ -598,8 +588,8 @@ function readCookie(name: string): strin
  	if (!configElement || !configElementAttribute) {
@@ -298,7 +298,7 @@ Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench.ts
 +	const secretStorageKeyPath = (window.location.pathname + "/mint-key").replace(/\/\/+/g, "/");
  	const secretStorageCrypto = secretStorageKeyPath && ServerKeyedAESCrypto.supported()
  		? new ServerKeyedAESCrypto(secretStorageKeyPath) : new TransparentCrypto();
- 
+
 Index: code-server/lib/vscode/src/vs/platform/extensionResourceLoader/common/extensionResourceLoader.ts
 ===================================================================
 --- code-server.orig/lib/vscode/src/vs/platform/extensionResourceLoader/common/extensionResourceLoader.ts
