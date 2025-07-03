@@ -48,8 +48,8 @@ Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench-dev.html
 +		<link rel="manifest" href="{{VS_BASE}}/manifest.json" crossorigin="use-credentials" />
  		<style id="vscode-css-modules" type="text/css" media="screen"></style>
  
- 	</head>
-@@ -39,7 +39,7 @@
+ 		<script src="{{BASE}}/_static/out/browser/inactivityTracker.js"></script>
+@@ -41,7 +41,7 @@
  
  	<!-- Startup (do not modify order of script tags!) -->
  	<script>
@@ -84,7 +84,7 @@ Index: code-server/lib/vscode/src/vs/code/browser/workbench/workbench.html
 +		<link rel="alternate icon" href="{{BASE}}/_static/src/browser/media/favicon.ico" type="image/x-icon" />
 +		<link rel="manifest" href="{{VS_BASE}}/manifest.json" crossorigin="use-credentials" />
  		<link rel="stylesheet" href="{{WORKBENCH_WEB_BASE_URL}}/out/vs/code/browser/workbench/workbench.css">
- 
+ 		<script src="{{BASE}}/_static/out/browser/inactivityTracker.js"></script>
  	</head>
 @@ -36,7 +36,7 @@
  
