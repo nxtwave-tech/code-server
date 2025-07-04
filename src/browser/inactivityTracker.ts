@@ -21,7 +21,7 @@ interface TrackerStatus {
 }
 
 class InactivityTracker {
-  private readonly INACTIVITY_TIMEOUT: number = 1 * 60 * 1000 // 5 minutes in milliseconds
+  private readonly INACTIVITY_TIMEOUT: number = 15 * 60 * 1000 // 5 minutes in milliseconds
   private timer: number | null = null
   private isActive: boolean = true
   private isInitialized: boolean = false
