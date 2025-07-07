@@ -1,0 +1,31 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 22
+    commands:
+      - echo Installing Node.js 22.16.0 manually
+      - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+      - export NVM_DIR="$HOME/.nvm"
+      - [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      - nvm install 22.16.0
+      - nvm use 22.16.0
+      - node -v
+      - npm -v
+      - echo Installing project dependencies
+  build:
+    commands:
+      - echo Running deb_project build
+      - npm run deb_project
+  post_build:
+    commands:
+      - echo Build completed. Release packages should be in release-packages/
+
+artifacts:
+  files:
+    - release-packages/**/*
+
+cache:
+  paths:
+    - node_modules/**/*

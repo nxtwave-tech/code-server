@@ -13,10 +13,10 @@ quilt push -a
 npm install
 
 # Build vscode version
-VERSION=0.0.0 npm run build:vscode
+VERSION=1.0.6 npm run build:vscode
 
 # General build
-VERSION=1.0.4 npm run build
+VERSION=1.0.6 npm run build
 
 # Create release
 npm run release
@@ -25,6 +25,6 @@ npm run release
 npm run release:standalone
 
 # Package the project
-VERSION=1.0.4 npm run package
+VERSION=1.0.6 npm run package
 
 echo "✅ All steps completed successfully."
