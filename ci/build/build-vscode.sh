@@ -78,7 +78,6 @@ main() {
     "applicationName": "code-server",
     "dataFolderName": ".code-server",
     "win32MutexName": "codeserver",
-    // NOTE: Using original upstream repository for license URL reference
     "licenseUrl": "https://github.com/coder/code-server/blob/main/LICENSE",
     "win32DirName": "code-server",
     "win32NameVersion": "code-server",
@@ -86,7 +85,6 @@ main() {
     "win32ShellNameShort": "c&ode-server",
     "darwinBundleIdentifier": "com.coder.code.server",
     "linuxIconName": "com.coder.code.server",
-    // NOTE: Using original upstream repository for issue reporting
     "reportIssueUrl": "https://github.com/coder/code-server/issues/new",
     "documentationUrl": "https://go.microsoft.com/fwlink/?LinkID=533484#vscode",
     "keyboardShortcutsUrlMac": "https://go.microsoft.com/fwlink/?linkid=832143",
