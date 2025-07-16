@@ -96,14 +96,14 @@ main() {
       # This means the npm version will be tagged with "beta"
       # and installed when a user runs `npm install code-server@beta`
       NPM_TAG="beta"
-      PACKAGE_NAME="@coder/code-server-pr"
+      PACKAGE_NAME="@lavanyaburlagadda1807/code-server-poc-pr"
     fi
 
     if [[ "$NPM_ENVIRONMENT" == "development" ]]; then
       # Source: https://github.com/actions/checkout/issues/58#issuecomment-614041550
       PR_NUMBER=$(echo "$GITHUB_REF" | awk 'BEGIN { FS = "/" } ; { print $3 }')
       NPM_VERSION="$VERSION-$PR_NUMBER-$COMMIT_SHA"
-      PACKAGE_NAME="@coder/code-server-pr"
+      PACKAGE_NAME="@lavanyaburlagadda1807/code-server-poc-pr"
       # This means the npm version will be tagged with "<pr number>"
       # and installed when a user runs `npm install code-server@<pr number>`
       NPM_TAG="$PR_NUMBER"

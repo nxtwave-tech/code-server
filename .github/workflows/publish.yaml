@@ -35,7 +35,7 @@ jobs:
       - name: Download npm package from release artifacts
         uses: robinraju/release-downloader@v1.12
         with:
-          repository: "coder/code-server"
+          repository: "lavanyaburlagadda1807/code-server-poc"
           tag: ${{ github.event.inputs.version || github.ref_name }}
           fileName: "package.tar.gz"
           out-file-path: "release-npm-package"
@@ -178,7 +178,7 @@ jobs:
       - name: Download deb artifacts
         uses: robinraju/release-downloader@v1.12
         with:
-          repository: "coder/code-server"
+          repository: "lavanyaburlagadda1807/code-server-poc"
           tag: v${{ env.VERSION }}
           fileName: "*.deb"
           out-file-path: "release-packages"
@@ -186,7 +186,7 @@ jobs:
       - name: Download rpm artifacts
         uses: robinraju/release-downloader@v1.12
         with:
-          repository: "coder/code-server"
+          repository: "lavanyaburlagadda1807/code-server-poc"
           tag: v${{ env.VERSION }}
           fileName: "*.rpm"
           out-file-path: "release-packages"

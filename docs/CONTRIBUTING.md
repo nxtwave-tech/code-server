@@ -67,7 +67,7 @@ for more information.
 
 ## Development workflow
 
-1. `git clone https://github.com/coder/code-server.git` - Clone `code-server`
+1. `git clone https://github.com/coder/code-server.git` - Clone `code-server` (NOTE: Original upstream repository for contributing)
 2. `git submodule update --init` - Clone `vscode` submodule
 3. `quilt push -a` - Apply patches to the `vscode` submodule.
 4. `npm install` - Install dependencies

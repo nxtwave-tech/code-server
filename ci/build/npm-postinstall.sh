@@ -104,6 +104,7 @@ main() {
 
   if ! vscode_install; then
     echo "You may not have the required dependencies to build the native modules."
+    # NOTE: Referencing upstream documentation for build requirements
     echo "Please see https://github.com/coder/code-server/blob/main/docs/npm.md"
     exit 1
   fi

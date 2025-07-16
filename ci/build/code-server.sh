@@ -5,7 +5,7 @@ set -eu
 # Runs code-server with the bundled node binary.
 
 _realpath() {
-  # See https://github.com/coder/code-server/issues/1537 on why no realpath or readlink -f.
+  # NOTE: See upstream issue for technical explanation: https://github.com/coder/code-server/issues/1537 on why no realpath or readlink -f.
 
   script="$1"
   cd "$(dirname "$script")"

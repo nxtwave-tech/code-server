@@ -26,7 +26,7 @@ Coder sponsors the development and maintenance of the code-server project. We wi
 
 | Version                                                 | Supported          |
 | ------------------------------------------------------- | ------------------ |
-| [Latest](https://github.com/coder/code-server/releases) | :white_check_mark: |
+| [Latest](https://github.com/lavanyaburlagadda1807/code-server-poc/releases) | :white_check_mark: |
 
 ## Reporting a Vulnerability
 

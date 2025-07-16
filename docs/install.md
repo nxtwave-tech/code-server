@@ -33,7 +33,7 @@ operating systems.
 ## install.sh
 
 The easiest way to install code-server is to use our [install
-script](https://github.com/coder/code-server/blob/main/install.sh) for Linux, macOS and FreeBSD. The install script
+script](https://github.com/lavanyaburlagadda1807/code-server-poc/blob/main/install.sh) for Linux, macOS and FreeBSD. The install script
 [attempts to use the system package manager](#detection-reference) if possible.
 
 You can preview what occurs during the install process:

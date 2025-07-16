@@ -56,7 +56,10 @@ export const register = async (app: App, args: DefaultedArgs): Promise<Disposabl
   app.wsRouter.use(cookieParser())
 
   const settings = new SettingsProvider<CoderSettings>(path.join(args["user-data-dir"], "coder.json"))
-  const updater = new UpdateProvider("https://api.github.com/repos/coder/code-server/releases/latest", settings)
+  const updater = new UpdateProvider(
+    "https://api.github.com/repos/lavanyaburlagadda1807/code-server-poc/releases/latest",
+    settings,
+  )
 
   const common: express.RequestHandler = (req, _, next) => {
     // /healthz|/healthz/ needs to be excluded otherwise health checks will make
