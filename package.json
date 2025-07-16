@@ -23,7 +23,7 @@
     "test:native": "./ci/dev/test-native.sh",
     "test:scripts": "./ci/dev/test-scripts.sh",
     "package": "./ci/build/build-packages.sh",
-    "deb_project": "./ci/build/build_project.sh",
+    "deb_project": "if [ -z \"$VERSION\" ]; then echo 'Error: VERSION environment variable is required. Usage: VERSION=1.2.3 npm run deb_project'; exit 1; fi && ./ci/build/build_project.sh \"$VERSION\" && VERSION=\"$VERSION\" npm run package",
     "prettier": "prettier --write --log-level=warn --cache .",
     "preinstall": "node ./ci/dev/preinstall.js",
     "postinstall": "./ci/dev/postinstall.sh",

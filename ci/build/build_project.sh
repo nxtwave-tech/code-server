@@ -3,6 +3,15 @@ quilt pop -a
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+# Check if version argument is provided
+if [ -z "$1" ]; then
+  echo "Error: Version argument is required"
+  echo "Usage: $0 <version>"
+  exit 1
+fi
+
+VERSION="$1"
+
 # Update git submodules
 git submodule update --init
 
@@ -13,18 +22,15 @@ quilt push -a
 npm install
 
 # Build vscode version
-VERSION=1.0.6 npm run build:vscode
+VERSION=$VERSION npm run build:vscode
 
 # General build
-VERSION=1.0.6 npm run build
+VERSION=$VERSION npm run build
 
 # Create release
 npm run release
 
 # Create standalone release
 npm run release:standalone
-
-# Package the project
-VERSION=1.0.6 npm run package
 
 echo "✅ All steps completed successfully."
