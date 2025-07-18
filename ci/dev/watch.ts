@@ -7,6 +7,7 @@ interface DevelopmentCompilers {
   vscode: ChildProcess
   vscodeWebExtensions: ChildProcess
   codeServer: ChildProcess
+  browser: ChildProcess
   plugins: ChildProcess | undefined
 }
 
@@ -45,6 +46,9 @@ class Watcher {
 
   private readonly compilers: DevelopmentCompilers = {
     codeServer: spawn("tsc", ["--watch", "--pretty", "--preserveWatchOutput"], { cwd: this.rootPath }),
+    browser: spawn("tsc", ["--watch", "--pretty", "--preserveWatchOutput", "--project", "src/browser/tsconfig.json"], {
+      cwd: this.rootPath,
+    }),
     vscode: spawn("npm", ["run", "watch"], { cwd: this.paths.vscodeDir }),
     vscodeWebExtensions: spawn("npm", ["run", "watch-web"], { cwd: this.paths.vscodeDir }),
     plugins: this.paths.pluginDir
@@ -72,6 +76,7 @@ class Watcher {
 
     onLine(this.compilers.vscode, this.parseVSCodeLine)
     onLine(this.compilers.codeServer, this.parseCodeServerLine)
+    onLine(this.compilers.browser, this.parseBrowserLine)
 
     if (this.compilers.plugins) {
       onLine(this.compilers.plugins, this.parsePluginLine)
@@ -100,6 +105,17 @@ class Watcher {
 
     if (strippedLine.includes("Watching for file changes")) {
       console.log("[Compiler][code-server]", "Finished compiling!", "(Refresh your web browser ♻️)")
+      this.reloadWebServer()
+    }
+  }
+
+  private parseBrowserLine: OnLineCallback = (strippedLine, originalLine) => {
+    if (!strippedLine.length) return
+
+    console.log("[Compiler][browser]", originalLine)
+
+    if (strippedLine.includes("Watching for file changes")) {
+      console.log("[Compiler][browser]", "Finished compiling!", "(Refresh your web browser ♻️)")
       this.reloadWebServer()
     }
   }

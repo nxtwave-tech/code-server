@@ -1,0 +1,30 @@
+Fix remote agent connection timeouts for package installations
+
+Increases timeout values to prevent "Remote Extension host terminated unexpectedly" 
+errors during long-running operations like package installations.
+
+- RECONNECT_TIMEOUT: 30s -> 5 minutes (300s)
+- Handshake timeout: 10s -> 60s
+
+Index: code-server/lib/vscode/src/vs/platform/remote/common/remoteAgentConnection.ts
+===================================================================
+--- code-server/lib/vscode/src/vs/platform/remote/common/remoteAgentConnection.ts
++++ code-server/lib/vscode/src/vs/platform/remote/common/remoteAgentConnection.ts
+@@ -21,7 +21,7 @@ import { RemoteAuthorityResolverError, RemoteConnection } from './remoteAuthori
+ import { IRemoteSocketFactoryService } from './remoteSocketFactoryService.js';
+ import { ISignService } from '../../sign/common/sign.js';
+ 
+-const RECONNECT_TIMEOUT = 30 * 1000 /* 30s */;
++const RECONNECT_TIMEOUT = 300 * 1000 /* 5 minutes */;
+ 
+ export const enum ConnectionType {
+ 	Management = 1,
+@@ -263,7 +263,7 @@ async function connectToRemoteExtensionHostAgent<T extends RemoteConnection>(op
+ 	protocol.sendControl(VSBuffer.fromString(JSON.stringify(authRequest)));
+ 
+ 	try {
+-		const msg = await readOneControlMessage<HandshakeMessage>(protocol, combineTimeoutCancellation(timeoutCancellationToken, createTimeoutCancellation(10000)));
++		const msg = await readOneControlMessage<HandshakeMessage>(protocol, combineTimeoutCancellation(timeoutCancellationToken, createTimeoutCancellation(60000)));
+ 
+ 		if (msg.type !== 'sign' || typeof msg.data !== 'string') {
+ 			const error: any = new Error('Unexpected handshake message');

@@ -252,14 +252,9 @@ class InactivityTracker {
 }
 
 // Extend window interface to include the tracker
-declare global {
-  interface Window {
-    inactivityTracker?: InactivityTracker
-  }
+interface WindowWithInactivityTracker extends Window {
+  inactivityTracker?: InactivityTracker
 }
-
-// Export something to make this a module
-export {}
 
 // Initialize when DOM is ready
 function initializeTracker(): void {
@@ -267,7 +262,7 @@ function initializeTracker(): void {
   const tracker = new InactivityTracker()
 
   // Expose tracker to window for debugging
-  window.inactivityTracker = tracker
+  ;(window as WindowWithInactivityTracker).inactivityTracker = tracker
 
   // Initialize the tracker
   tracker.init()
