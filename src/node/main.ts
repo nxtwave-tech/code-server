@@ -9,7 +9,7 @@ import { AuthType, DefaultedArgs, Feature, toCodeArgs, UserProvidedArgs } from "
 import { commit, version, vsRootPath } from "./constants"
 import { register } from "./routes"
 import { VSCodeModule } from "./routes/vscode"
-import { isDirectory, open } from "./util"
+import { isDirectory } from "./util"
 
 /**
  * Return true if the user passed an extension-related VS Code flag.
@@ -195,14 +195,15 @@ export const runCodeServer = async (
     )
   }
 
-  if (args.open) {
-    try {
-      await open(serverAddress)
-      logger.info(`Opened ${serverAddress}`)
-    } catch (error) {
-      logger.error("Failed to open", field("address", serverAddress.toString()), field("error", error))
-    }
-  }
+  // Automatic browser opening disabled
+  // if (args.open) {
+  //   try {
+  //     await open(serverAddress)
+  //     logger.info(`Opened ${serverAddress}`)
+  //   } catch (error) {
+  //     logger.error("Failed to open", field("address", serverAddress.toString()), field("error", error))
+  //   }
+  // }
 
   return {
     server: app.server,
