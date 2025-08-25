@@ -24,9 +24,9 @@ We use the following tools to help us stay on top of vulnerability mitigation.
 
 Coder sponsors the development and maintenance of the code-server project. We will fix security issues within 90 days of receiving a report and publish the fix in a subsequent release. The code-server project does not provide backports or patch releases for security issues at this time.
 
-| Version                                                 | Supported          |
-| ------------------------------------------------------- | ------------------ |
-| [Latest](https://github.com/lavanyaburlagadda1807/code-server-poc/releases) | :white_check_mark: |
+| Version                                                        | Supported          |
+| -------------------------------------------------------------- | ------------------ |
+| [Latest](https://github.com/nxtwave-tech/code-server/releases) | :white_check_mark: |
 
 ## Reporting a Vulnerability
 

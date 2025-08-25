@@ -3,11 +3,11 @@
   "license": "MIT",
   "version": "0.0.0",
   "description": "Run VS Code on a remote server.",
-  "homepage": "https://github.com/lavanyaburlagadda1807/code-server-poc",
+  "homepage": "https://github.com/nxtwave-tech/code-server",
   "bugs": {
-    "url": "https://github.com/lavanyaburlagadda1807/code-server-poc/issues"
+    "url": "https://github.com/nxtwave-tech/code-server/issues"
   },
-  "repository": "https://github.com/lavanyaburlagadda1807/code-server-poc",
+  "repository": "https://github.com/nxtwave-tech/code-server",
   "scripts": {
     "clean": "./ci/build/clean.sh",
     "build": "./ci/build/build-code-server.sh",

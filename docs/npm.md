@@ -31,7 +31,7 @@ includes installing instructions based on your operating system.
 
 We use the same major version of Node.js shipped with Code's remote, which is
 currently `22.x`. VS Code also [lists Node.js
-requirements](https://github.com/lavanyaburlagadda1807/vscode-poc/wiki/How-to-Contribute#prerequisites).
+requirements](https://github.com/nxtwave-tech/vscode-dev/wiki/How-to-Contribute#prerequisites).
 
 Using other versions of Node.js [may lead to unexpected
 behavior](https://github.com/coder/code-server/issues/1633).
@@ -86,7 +86,7 @@ Proceed to [installing](#installing)
 
 ## Windows
 
-Installing code-server requires all of the [prerequisites for VS Code development](https://github.com/lavanyaburlagadda1807/vscode-poc/wiki/How-to-Contribute#prerequisites). When installing the C++ compiler tool chain, we recommend using "Option 2: Visual Studio 2019" for best results.
+Installing code-server requires all of the [prerequisites for VS Code development](https://github.com/nxtwave-tech/vscode-dev/wiki/How-to-Contribute#prerequisites). When installing the C++ compiler tool chain, we recommend using "Option 2: Visual Studio 2019" for best results.
 
 Next, install code-server with:
 

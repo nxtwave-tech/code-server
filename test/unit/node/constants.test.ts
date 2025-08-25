@@ -10,7 +10,7 @@ describe("constants", () => {
     const mockPackageJson = {
       name: "mock-code-server",
       description: "Run VS Code on a remote server.",
-      repository: "https://github.com/lavanyaburlagadda1807/code-server-poc",
+      repository: "https://github.com/nxtwave-tech/code-server",
       version: "1.0.0",
       commit: "f6b2be2838f4afb217c2fd8f03eafedd8d55ef9b",
     }

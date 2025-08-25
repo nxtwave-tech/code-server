@@ -8,7 +8,7 @@ maintainer: "Joe Previte <joe@coder.com>"
 description: |
   Run VS Code in the browser.
 vendor: "Coder"
-homepage: "https://github.com/lavanyaburlagadda1807/code-server-poc"
+homepage: "https://github.com/nxtwave-tech/code-server"
 license: "MIT"
 
 contents:

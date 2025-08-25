@@ -127,7 +127,7 @@ These are the closed-source extensions that are presently unavailable:
    implement something similar (see
    [#33](https://github.com/coder/code-server/issues/33))
 1. [Remote Extensions (SSH, Containers,
-   WSL)](https://github.com/lavanyaburlagadda1807/vscode-remote-release). We may implement
+   WSL)](https://github.com/nxtwave-tech/vscode-remote-release). We may implement
    these again at some point, see
    ([#1315](https://github.com/coder/code-server/issues/1315)).
 
@@ -188,7 +188,7 @@ Though you can technically use Microsoft's marketplace in this manner, we
 strongly discourage you from doing so since this is [against their Terms of Use](#why-cant-code-server-use-microsofts-extension-marketplace).
 
 For further information, see [this
-discussion](https://github.com/lavanyaburlagadda1807/vscode-poc/issues/31168#issue-244533026)
+discussion](https://github.com/nxtwave-tech/vscode-dev/issues/31168#issue-244533026)
 regarding the use of the Microsoft URLs in forks, as well as [VSCodium's
 docs](https://github.com/VSCodium/vscodium/blob/master/DOCS.md#extensions--marketplace).
 

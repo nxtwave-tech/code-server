@@ -121,7 +121,7 @@ and tricks helpful:
 - Copy & paste in terminal does not work well with keyboard shortcuts [#3491](https://github.com/coder/code-server/issues/3491)
 - `ctrl+c` does not stop a long-running process in the browser
   - Tracking upstream issue here:
-    [#114009](https://github.com/lavanyaburlagadda1807/vscode-poc/issues/114009)
+    [#114009](https://github.com/nxtwave-tech/vscode-dev/issues/114009)
   - See [workaround](#ctrl-c-workaround)
 
 Additionally, see [issues in the code-server repo that are tagged with the `os-ios`
@@ -132,7 +132,7 @@ for more information.
 
 This's currently an issue with `ctrl+c` not stopping a running process in the
 integrated terminal. We have filed an issue upstream and are tracking
-[here](https://github.com/lavanyaburlagadda1807/vscode-poc/issues/114009).
+[here](https://github.com/nxtwave-tech/vscode-dev/issues/114009).
 
 In the meantime, you can manually define a shortcut as a workaround:
 

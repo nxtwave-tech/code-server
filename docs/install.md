@@ -33,7 +33,7 @@ operating systems.
 ## install.sh
 
 The easiest way to install code-server is to use our [install
-script](https://github.com/lavanyaburlagadda1807/code-server-poc/blob/main/install.sh) for Linux, macOS and FreeBSD. The install script
+script](https://github.com/nxtwave-tech/code-server/blob/main/install.sh) for Linux, macOS and FreeBSD. The install script
 [attempts to use the system package manager](#detection-reference) if possible.
 
 You can preview what occurs during the install process:
@@ -116,7 +116,7 @@ This process requires C dependencies; see our guide on [installing with npm](./n
 ## Standalone releases
 
 We publish self-contained `.tar.gz` archives for every release on
-[GitHub](https://github.com/lavanyaburlagadda1807/code-server-poc/releases). The archives bundle the
+[GitHub](https://github.com/nxtwave-tech/code-server/releases). The archives bundle the
 node binary and node modules.
 
 We create the standalone releases using the [npm package](#npm), and we
@@ -129,7 +129,7 @@ requirement).
 To use a standalone release:
 
 1. Download the latest release archive for your system from
-   [GitHub](https://github.com/lavanyaburlagadda1807/code-server-poc/releases).
+   [GitHub](https://github.com/nxtwave-tech/code-server/releases).
 2. Unpack the release.
 3. Run code-server by executing `./bin/code-server`.
 
@@ -141,7 +141,7 @@ release on Linux:
 
 ```bash
 mkdir -p ~/.local/lib ~/.local/bin
-curl -fL https://github.com/lavanyaburlagadda1807/code-server-poc/releases/download/v$VERSION/code-server-$VERSION-linux-amd64.tar.gz \
+curl -fL https://github.com/nxtwave-tech/code-server/releases/download/v$VERSION/code-server-$VERSION-linux-amd64.tar.gz \
   | tar -C ~/.local/lib -xz
 mv ~/.local/lib/code-server-$VERSION-linux-amd64 ~/.local/lib/code-server-$VERSION
 ln -s ~/.local/lib/code-server-$VERSION/bin/code-server ~/.local/bin/code-server
@@ -156,7 +156,7 @@ code-server
 > upgrade or [build with npm](#npm).
 
 ```bash
-curl -fOL https://github.com/lavanyaburlagadda1807/code-server-poc/releases/download/v$VERSION/code-server_${VERSION}_amd64.deb
+curl -fOL https://github.com/nxtwave-tech/code-server/releases/download/v$VERSION/code-server_${VERSION}_amd64.deb
 sudo dpkg -i code-server_${VERSION}_amd64.deb
 sudo systemctl enable --now code-server@$USER
 # Now visit http://127.0.0.1:8080. Your password is in ~/.config/code-server/config.yaml
@@ -168,7 +168,7 @@ sudo systemctl enable --now code-server@$USER
 > with npm](#npm).
 
 ```bash
-curl -fOL https://github.com/lavanyaburlagadda1807/code-server-poc/releases/download/v$VERSION/code-server-$VERSION-amd64.rpm
+curl -fOL https://github.com/nxtwave-tech/code-server/releases/download/v$VERSION/code-server-$VERSION-amd64.rpm
 sudo rpm -i code-server-$VERSION-amd64.rpm
 sudo systemctl enable --now code-server@$USER
 # Now visit http://127.0.0.1:8080. Your password is in ~/.config/code-server/config.yaml
