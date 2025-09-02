@@ -75,7 +75,7 @@ EOF
 
 echo_latest_version() {
   if [ "${EDGE-}" ]; then
-    version="$(curl -fsSL https://api.github.com/repos/lavanyaburlagadda1807/code-server-poc/releases | awk 'match($0,/.*"html_url": "(.*\/releases\/tag\/.*)".*/)' | head -n 1 | awk -F '"' '{print $4}')"
+    version="$(curl -fsSL https://api.github.com/repos/nxtwave-tech/code-server/releases | awk 'match($0,/.*"html_url": "(.*\/releases\/tag\/.*)".*/)' | head -n 1 | awk -F '"' '{print $4}')"
   else
     # https://gist.github.com/lukechilds/a83e1d7127b78fef38c2914c4ececc3c#gistcomment-2758860
     version="$(curl -fsSLI -o /dev/null -w "%{url_effective}" https://github.com/nxtwave-tech/code-server/releases/latest)"
@@ -361,7 +361,7 @@ install_deb() {
   echoh "Installing v$VERSION of the $ARCH deb package from GitHub."
   echoh
 
-  fetch "https://github.com/nxtwave-tech/code-server/releases/download/$VERSION/code-server-poc_${VERSION}_$ARCH.deb" \
+  fetch "https://github.com/nxtwave-tech/code-server/releases/download/$VERSION/code-server_${VERSION}_$ARCH.deb" \
     "$CACHE_DIR/code-server_${VERSION}_$ARCH.deb"
   sudo_sh_c dpkg -i "$CACHE_DIR/code-server_${VERSION}_$ARCH.deb"
 
@@ -372,7 +372,7 @@ install_rpm() {
   echoh "Installing v$VERSION of the $ARCH rpm package from GitHub."
   echoh
 
-  fetch "https://github.com/nxtwave-tech/code-server/releases/download/v$VERSION/code-server-poc-$VERSION-$ARCH.rpm" \
+  fetch "https://github.com/nxtwave-tech/code-server/releases/download/v$VERSION/code-server-$VERSION-$ARCH.rpm" \
     "$CACHE_DIR/code-server-$VERSION-$ARCH.rpm"
   sudo_sh_c rpm -U "$CACHE_DIR/code-server-$VERSION-$ARCH.rpm"
 
@@ -419,7 +419,7 @@ install_standalone() {
 
   "$sh_c" mkdir -p "$STANDALONE_INSTALL_PREFIX/lib" "$STANDALONE_INSTALL_PREFIX/bin"
   "$sh_c" tar -C "$STANDALONE_INSTALL_PREFIX/lib" -xzf "$CACHE_DIR/code-server-$VERSION.tar.gz"
-  "$sh_c" mv -f "$STANDALONE_INSTALL_PREFIX/lib/code-server-poc-$VERSION" "$STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION"
+  "$sh_c" mv -f "$STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION" "$STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION"
   "$sh_c" ln -fs "$STANDALONE_INSTALL_PREFIX/lib/code-server-$VERSION/bin/code-server" "$STANDALONE_INSTALL_PREFIX/bin/code-server"
 
   echo_standalone_postinstall
