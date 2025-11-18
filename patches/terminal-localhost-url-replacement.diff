@@ -1,0 +1,105 @@
+Replace localhost URLs in terminal with server URL
+
+This patch provides complete localhost URL replacement in the terminal:
+1. Display: Replaces localhost URLs in terminal output before displaying
+2. Navigation: Replaces localhost URLs when clicking links
+
+Server URL Detection:
+- First checks for ?serverUrl=<url> query parameter
+- Falls back to window.location.origin if no query parameter
+
+Example Usage:
+URL: http://0.0.0.0:8080/?serverUrl=https://custom.com
+Terminal shows: Local: http://localhost:3000/
+- Displayed as: Local: https://custom.com/
+- Clicking opens: https://custom.com/
+
+Supports: localhost, 127.0.0.1, 0.0.0.0 with any port
+
+Index: code-server/lib/vscode/src/vs/workbench/contrib/terminal/browser/terminalInstance.ts
+===================================================================
+--- code-server.orig/lib/vscode/src/vs/workbench/contrib/terminal/browser/terminalInstance.ts
++++ code-server/lib/vscode/src/vs/workbench/contrib/terminal/browser/terminalInstance.ts
+@@ -1581,10 +1581,42 @@ export class TerminalInstance extends Di
+ 		}
+ 	}
+ 
++	private _replaceLocalhostUrls(data: string): string {
++		// Get server URL from query parameter or window.location
++		let serverUrl = '';
++		if (typeof window !== 'undefined' && window.location) {
++			const urlParams = new URLSearchParams(window.location.search);
++			const serverUrlParam = urlParams.get('serverUrl');
++			serverUrl = serverUrlParam || window.location.origin;
++		}
++
++		if (!serverUrl) {
++			return data;
++		}
++
++		// Replace localhost URLs in the terminal output
++		// Handle ANSI escape codes that may be embedded within the URL
++		// Pattern matches: http(s)://localhost:3000/ where ANSI codes like \x1b[36m can appear between parts
++		return data.replace(/https?:\/\/(?:\x1b\[\d+m)*(localhost|127\.0\.0\.1|0\.0\.0\.0)(?:\x1b\[\d+m)*:(?:\x1b\[\d+m)*(\d+)(?:\x1b\[\d+m)*([\w\-\.\~:\/\?\#[\]\@!\$&\(\)\*\+\,\;\=]*)/gi, (match, host, port, path) => {
++			// Extract and preserve ANSI codes
++			const ansiCodes = match.match(/\x1b\[\d+m/g) || [];
++			const cleanPath = path.replace(/\x1b\[\d+m/g, '');
++			const replacedUrl = `${serverUrl}${cleanPath || ''}`;
++
++			// Reapply first and last ANSI codes to preserve coloring
++			if (ansiCodes.length > 0) {
++				return ansiCodes[0] + replacedUrl + ansiCodes[ansiCodes.length - 1];
++			}
++			return replacedUrl;
++		});
++	}
++
+ 	private _writeProcessData(data: string, cb?: () => void) {
+ 		this._onWillData.fire(data);
++		// Replace localhost URLs before displaying in terminal
++		const processedData = this._replaceLocalhostUrls(data);
+ 		const messageId = ++this._latestXtermWriteData;
+-		this.xterm?.raw.write(data, () => {
++		this.xterm?.raw.write(processedData, () => {
+ 			this._latestXtermParseData = messageId;
+ 			this._processManager.acknowledgeDataEvent(data.length);
+ 			cb?.();
+Index: code-server/lib/vscode/src/vs/workbench/contrib/terminalContrib/links/browser/terminalLinkOpeners.ts
+===================================================================
+--- code-server.orig/lib/vscode/src/vs/workbench/contrib/terminalContrib/links/browser/terminalLinkOpeners.ts
++++ code-server/lib/vscode/src/vs/workbench/contrib/terminalContrib/links/browser/terminalLinkOpeners.ts
+@@ -286,9 +286,33 @@ export class TerminalUrlLinkOpener imple
+ 		if (!link.uri) {
+ 			throw new Error('Tried to open a url without a resolved URI');
+ 		}
++
++		// Replace localhost URLs with the actual server URL
++		let urlToOpen = link.text;
++		const localhostMatch = link.text.match(/https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0):(\d+)(.*)/i);
++		if (localhostMatch) {
++			const path = localhostMatch[3] || '';
++
++			// Get the server URL from query parameter or window.location
++			if (typeof window !== 'undefined' && window.location) {
++				let serverUrl = window.location.origin;
++
++				// Check for serverUrl query parameter
++				const urlParams = new URLSearchParams(window.location.search);
++				const serverUrlParam = urlParams.get('serverUrl');
++				if (serverUrlParam) {
++					serverUrl = serverUrlParam;
++				}
++
++				// Replace localhost URL with server URL + path
++				urlToOpen = `${serverUrl}${path}`;
++				console.log(`[Terminal] Replacing ${link.text} with ${urlToOpen}`);
++			}
++		}
++
+ 		// It's important to use the raw string value here to avoid converting pre-encoded values
+ 		// from the URL like `%2B` -> `+`.
+-		this._openerService.open(link.text, {
++		this._openerService.open(urlToOpen, {
+ 			allowTunneling: this._isRemote && this._configurationService.getValue('remote.forwardOnOpen'),
+ 			allowContributedOpeners: true,
+ 			openExternal: true

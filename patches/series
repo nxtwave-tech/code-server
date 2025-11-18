@@ -24,3 +24,4 @@ trusted-domains.diff
 signature-verification.diff
 optimize-for-size.diff
 remote-agent-timeout.diff
+terminal-localhost-url-replacement.diff
