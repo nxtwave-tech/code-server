@@ -1,0 +1,63 @@
+Fix sidebar collapse reliability: write storage before workbench.startup()
+
+Move VSCODE_COLLAPSE_SIDEBAR logic from client.ts (post-startup, racy) to
+web.main.ts (pre-startup). The sidebar hidden state is read by LayoutStateModel
+during workbench.startup() -> initLayout() -> initLayoutState(). By writing
+workbench.sideBar.hidden = true into StorageScope.WORKSPACE before startup,
+the layout system picks it up deterministically on every load -- including on
+slow remote connections like Fargate where the old setPartHidden() call arrived
+too late.
+
+--- a/lib/vscode/src/vs/workbench/browser/client.ts
++++ b/lib/vscode/src/vs/workbench/browser/client.ts
+@@ -6,7 +6,6 @@ import { ILogService } from '../../platf
+ import { INotificationService, Severity } from '../../platform/notification/common/notification.js';
+ import { IProductService } from '../../platform/product/common/productService.js';
+ import { IStorageService, StorageScope, StorageTarget } from '../../platform/storage/common/storage.js';
+-import { IWorkbenchLayoutService, Parts } from '../services/layout/browser/layoutService.js';
+ 
+ export class CodeServerClient extends Disposable {
+ 	static LOGOUT_COMMAND_ID = 'code-server.logout';
+@@ -16,7 +15,6 @@ export class CodeServerClient extends Di
+ 		@INotificationService private notificationService: INotificationService,
+ 		@IProductService private productService: IProductService,
+ 		@IStorageService private storageService: IStorageService,
+-		@IWorkbenchLayoutService private layoutService: IWorkbenchLayoutService,
+ 	) {
+ 		super();
+ 	}
+@@ -95,10 +93,6 @@ export class CodeServerClient extends Di
+ 		if (this.productService.serviceWorker) {
+ 			await this.registerServiceWorker(this.productService.serviceWorker);
+ 		}
+-
+-		if (this.productService.collapseSidebar && this.layoutService.isVisible(Parts.SIDEBAR_PART)) {
+-			this.layoutService.setPartHidden(true, Parts.SIDEBAR_PART);
+-		}
+ 	}
+ 
+ 	private checkUpdates(updateEndpoint: string) {
+--- a/lib/vscode/src/vs/workbench/browser/web.main.ts
++++ b/lib/vscode/src/vs/workbench/browser/web.main.ts
+@@ -34,7 +34,7 @@ import { ISignService } from '../../plat
+ import { SignService } from '../../platform/sign/browser/signService.js';
+ import { IWorkbenchConstructionOptions, IWorkbench, IWorkspace, ITunnel } from './web.api.js';
+ import { BrowserStorageService } from '../services/storage/browser/storageService.js';
+-import { IStorageService } from '../../platform/storage/common/storage.js';
++import { IStorageService, StorageScope, StorageTarget } from '../../platform/storage/common/storage.js';
+ import { toLocalISOString } from '../../base/common/date.js';
+ import { isWorkspaceToOpen, isFolderToOpen } from '../../platform/window/common/window.js';
+ import { getSingleFolderWorkspaceIdentifier, getWorkspaceIdentifier } from '../services/workspaces/browser/workspaces.js';
+@@ -128,6 +128,12 @@ export class BrowserMain extends Disposa
+ 		// Listeners
+ 		this.registerListeners(workbench);
+ 
++		// Collapse sidebar before layout initialization reads storage state
++		if (this.configuration.productConfiguration?.collapseSidebar) {
++			const storageService = services.serviceCollection.get(IStorageService) as IStorageService;
++			storageService.store('workbench.sideBar.hidden', true, StorageScope.WORKSPACE, StorageTarget.MACHINE);
++		}
++
+ 		// Startup
+ 		const instantiationService = workbench.startup();
+ 
