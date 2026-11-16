@@ -1,0 +1,28 @@
+Backport notebook stack-trace regex fix (microsoft/vscode#252020)
+
+VS Code 1.101.x ships stack-trace link regexes with a lazy `.+?` nested inside
+a repeated group, e.g. (?:\u001b\[.+?m|\s)*. On IPython 9 tracebacks (thousands
+of ANSI sequences) this can backtrack catastrophically in the notebook error
+renderer and freeze the browser tab ("Page not responsive").
+
+Upstream fixed it in 1.102.0 by restricting the escape matcher to
+\u001b\[[\d;]*m and anchoring the cell regex. This patch applies the same
+change (stackTraceHelper.ts only) to our 1.101.1 base. Remove it when
+lib/vscode moves to >= 1.102.0.
+
+Index: code-server/lib/vscode/extensions/notebook-renderers/src/stackTraceHelper.ts
+===================================================================
+--- code-server.orig/lib/vscode/extensions/notebook-renderers/src/stackTraceHelper.ts
++++ code-server/lib/vscode/extensions/notebook-renderers/src/stackTraceHelper.ts
+@@ -33,9 +33,9 @@ export function formatStackTrace(stack:
+ const formatSequence = /\u001b\[.+?m/g;
+ const fileRegex = /File\s+(?:\u001b\[.+?m)?(.+):(\d+)/;
+ // look for the "--->" before a line number
+-const lineNumberRegex = /^((?:\u001b\[.+?m|\s)*[-]+>(?:\u001b\[.+?m|\s)*)(\d+)(?:\u001b\[.+?m)*( .*)/;
++const lineNumberRegex = /(-+>(?:\u001b\[[\d;]*m|\s)*)(\d+)(.*)/;
+ // just capturing parts of "Cell In[3], line 2" with lots of formatting in between
+-const cellRegex = /(?<prefix>(?:\u001b\[.+?m)*Cell(?:\u001b\[.+?m|\s)*In(?:\u001b\[.+?m|\s)*\[(?<executionCount>\d+)\](?:\u001b\[.+?m|\s|,)+)(?<lineLabel>line (?<lineNumber>\d+)).*/;
++const cellRegex = /^(?<prefix>(?:\u001b\[[\d;]*m|\s)*Cell(?:\u001b\[[\d;]*m|\s)*In(?:\u001b\[[\d;]*m|\s)*\[(?<executionCount>\d+)\](?:\u001b\[[\d;]*m|\s|,)+)(?<lineLabel>line (?<lineNumber>\d+))[^\n]*$/m;
+ // older versions of IPython ~8.3.0
+ const inputRegex = /(?<prefix>Input\s+?(?:\u001b\[.+?m)(?<cellLabel>In\s*\[(?<executionCount>\d+)\]))(?<postfix>.*)/;
+ 
