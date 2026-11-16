@@ -25,4 +25,6 @@ signature-verification.diff
 optimize-for-size.diff
 remote-agent-timeout.diff
 terminal-localhost-url-replacement.diff
+sidebar-default-file.diff
+sidebar-collapse-fix.diff
 notebook-stacktrace-regex.diff

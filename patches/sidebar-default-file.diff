@@ -1,0 +1,148 @@
+Collapse sidebar and open default notebook on startup
+
+Controlled by two independent env vars:
+- VSCODE_COLLAPSE_SIDEBAR: collapse the primary sidebar after workbench startup
+- VSCODE_OPEN_DEFAULT_NOTEBOOK: suppress Welcome and open a top-level .ipynb
+
+Both flags are gated by truthy values (1 or true, case-insensitive).
+When notebook flag is on, scan the workspace folder for *.ipynb files,
+pick one at random, set defaultLayout to force-open it, and set
+workbench.startupEditor to none. When sidebar flag is on, collapse the
+sidebar via IWorkbenchLayoutService after startup. Flags are independent.
+--- a/lib/vscode/src/vs/base/common/product.ts
++++ b/lib/vscode/src/vs/base/common/product.ts
+@@ -66,6 +66,8 @@ export interface IProductConfiguration {
+ 		readonly scope: string;
+ 	}
+ 	readonly telemetryEndpoint?: string
++	readonly openDefaultNotebook?: boolean
++	readonly collapseSidebar?: boolean
+ 
+ 	readonly version: string;
+ 	readonly date?: string;
+--- a/lib/vscode/src/vs/server/node/webClientServer.ts
++++ b/lib/vscode/src/vs/server/node/webClientServer.ts
+@@ -21,7 +21,7 @@ import { ServerConnectionToken, ServerCo
+ import { asTextOrError, IRequestService } from '../../platform/request/common/request.js';
+ import { IHeaders } from '../../base/parts/request/common/request.js';
+ import { CancellationToken } from '../../base/common/cancellation.js';
+-import { URI } from '../../base/common/uri.js';
++import { URI, type UriComponents } from '../../base/common/uri.js';
+ import { streamToBuffer } from '../../base/common/buffer.js';
+ import { IProductConfiguration } from '../../base/common/product.js';
+ import { isString, Mutable } from '../../base/common/types.js';
+@@ -114,6 +114,30 @@ export class WebClientServer {
+ 		this._webExtensionResourceUrlTemplate = this._productService.extensionsGallery?.resourceUrlTemplate ? URI.parse(this._productService.extensionsGallery.resourceUrlTemplate) : undefined;
+ 	}
+ 
++	private async _pickNotebookFile(
++		folderPath: string | undefined,
++		remoteAuthority: string
++	): Promise<UriComponents | undefined> {
++		if (!folderPath) {
++			return undefined;
++		}
++		try {
++			const entries = await promises.readdir(folderPath, { withFileTypes: true });
++			const notebooks = entries.filter(e => e.isFile() && e.name.endsWith('.ipynb'));
++			if (notebooks.length === 0) {
++				return undefined;
++			}
++			const pick = notebooks[Math.floor(Math.random() * notebooks.length)];
++			return URI.from({
++				scheme: Schemas.vscodeRemote,
++				authority: remoteAuthority,
++				path: resolve(folderPath, pick.name),
++			}).toJSON();
++		} catch {
++			return undefined;
++		}
++	}
++
+ 	/**
+ 	 * Handle web resources (i.e. only needed by the web client).
+ 	 * **NOTE**: This method is only invoked when the server has web bits.
+@@ -330,6 +354,25 @@ export class WebClientServer {
+ 
+ 		const resolveWorkspaceURI = (defaultLocation?: string) => defaultLocation && URI.file(resolve(defaultLocation)).with({ scheme: Schemas.vscodeRemote, authority: remoteAuthority });
+ 
++		const openDefaultNotebook = /^(1|true)$/i.test(process.env.VSCODE_OPEN_DEFAULT_NOTEBOOK ?? '');
++		const collapseSidebar = /^(1|true)$/i.test(process.env.VSCODE_COLLAPSE_SIDEBAR ?? '');
++
++		let workspaceFolderPath: string | undefined;
++		const folderQuery = parsedUrl.query['folder'];
++		if (typeof folderQuery === 'string') {
++			try {
++				workspaceFolderPath = resolve(decodeURIComponent(folderQuery));
++			} catch {
++				workspaceFolderPath = resolve(folderQuery);
++			}
++		} else if (this._environmentService.args['default-folder']) {
++			workspaceFolderPath = resolve(this._environmentService.args['default-folder']);
++		}
++
++		const notebookUri = openDefaultNotebook
++			? await this._pickNotebookFile(workspaceFolderPath, remoteAuthority)
++			: undefined;
++
+ 		const filePath = FileAccess.asFileUri(`vs/code/browser/workbench/workbench${this._environmentService.isBuilt ? '' : '-dev'}.html`).fsPath;
+ 		const authSessionInfo = !this._environmentService.isBuilt && this._environmentService.args['github-auth'] ? {
+ 			id: generateUuid(),
+@@ -358,6 +401,8 @@ export class WebClientServer {
+ 			},
+ 			enableTelemetry: this._productService.enableTelemetry,
+ 			telemetryEndpoint: this._productService.telemetryEndpoint,
++			openDefaultNotebook: openDefaultNotebook || undefined,
++			collapseSidebar: collapseSidebar || undefined,
+ 			embedderIdentifier: 'server-distro',
+ 			extensionsGallery: this._productService.extensionsGallery,
+ 			linkProtectionTrustedDomains,
+@@ -391,7 +436,18 @@ export class WebClientServer {
+ 			folderUri: resolveWorkspaceURI(this._environmentService.args['default-folder']),
+ 			workspaceUri: resolveWorkspaceURI(this._environmentService.args['default-workspace']),
+ 			productConfiguration,
+-			callbackRoute: callbackRoute
++			callbackRoute: callbackRoute,
++			...(openDefaultNotebook ? {
++				configurationDefaults: {
++					'workbench.startupEditor': 'none',
++				},
++			} : {}),
++			...(notebookUri ? {
++				defaultLayout: {
++					force: true,
++					editors: [{ uri: notebookUri, openOnlyIfExists: true }],
++				},
++			} : {})
+ 		};
+ 
+ 		const cookies = cookie.parse(req.headers.cookie || '');
+--- a/lib/vscode/src/vs/workbench/browser/client.ts
++++ b/lib/vscode/src/vs/workbench/browser/client.ts
+@@ -6,6 +6,7 @@ import { ILogService } from '../../platf
+ import { INotificationService, Severity } from '../../platform/notification/common/notification.js';
+ import { IProductService } from '../../platform/product/common/productService.js';
+ import { IStorageService, StorageScope, StorageTarget } from '../../platform/storage/common/storage.js';
++import { IWorkbenchLayoutService, Parts } from '../services/layout/browser/layoutService.js';
+ 
+ export class CodeServerClient extends Disposable {
+ 	static LOGOUT_COMMAND_ID = 'code-server.logout';
+@@ -15,6 +16,7 @@ export class CodeServerClient extends Di
+ 		@INotificationService private notificationService: INotificationService,
+ 		@IProductService private productService: IProductService,
+ 		@IStorageService private storageService: IStorageService,
++		@IWorkbenchLayoutService private layoutService: IWorkbenchLayoutService,
+ 	) {
+ 		super();
+ 	}
+@@ -93,6 +95,10 @@ export class CodeServerClient extends Di
+ 		if (this.productService.serviceWorker) {
+ 			await this.registerServiceWorker(this.productService.serviceWorker);
+ 		}
++
++		if (this.productService.collapseSidebar && this.layoutService.isVisible(Parts.SIDEBAR_PART)) {
++			this.layoutService.setPartHidden(true, Parts.SIDEBAR_PART);
++		}
+ 	}
+ 
+ 	private checkUpdates(updateEndpoint: string) {
