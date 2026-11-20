@@ -146,3 +146,31 @@ sidebar via IWorkbenchLayoutService after startup. Flags are independent.
  	}
  
  	private checkUpdates(updateEndpoint: string) {
+--- a/lib/vscode/src/vs/code/browser/workbench/workbench.ts
++++ b/lib/vscode/src/vs/code/browser/workbench/workbench.ts
+@@ -589,7 +589,24 @@ class WorkspaceProvider implements IWorkspaceProvider {
+ 	if (!configElement || !configElementAttribute) {
+ 		throw new Error('Missing web configuration element');
+ 	}
+-	const config: IWorkbenchConstructionOptions & { folderUri?: UriComponents; workspaceUri?: UriComponents; callbackRoute: string } = { ...JSON.parse(configElementAttribute), remoteAuthority: location.host }
++	const parsedConfig = JSON.parse(configElementAttribute);
++	// The server cannot know the real remote authority (it is the browser's
++	// location.host), so any vscode-remote URI it emitted carries a placeholder
++	// authority (e.g. "remote:443"). Rewrite them, otherwise the default notebook
++	// opens as a different resource than the one the explorer / extension host /
++	// Jupyter kernel use.
++	const fixAuthority = (uri: UriComponents): UriComponents =>
++		uri && uri.scheme === Schemas.vscodeRemote ? { ...uri, authority: location.host } : uri;
++	const config: IWorkbenchConstructionOptions & { folderUri?: UriComponents; workspaceUri?: UriComponents; callbackRoute: string } = {
++		...parsedConfig,
++		remoteAuthority: location.host,
++		...(parsedConfig.defaultLayout?.editors ? {
++			defaultLayout: {
++				...parsedConfig.defaultLayout,
++				editors: parsedConfig.defaultLayout.editors.map((e: { uri: UriComponents }) => ({ ...e, uri: fixAuthority(e.uri) }))
++			}
++		} : {})
++	}
+ 	const secretStorageKeyPath = (window.location.pathname + "/mint-key").replace(/\/\/+/g, "/");
+ 	const secretStorageCrypto = secretStorageKeyPath && ServerKeyedAESCrypto.supported()
+ 		? new ServerKeyedAESCrypto(secretStorageKeyPath) : new TransparentCrypto();
