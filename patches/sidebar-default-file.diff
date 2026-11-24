@@ -9,6 +9,10 @@ When notebook flag is on, scan the workspace folder for *.ipynb files,
 pick one at random, set defaultLayout to force-open it, and set
 workbench.startupEditor to none. When sidebar flag is on, collapse the
 sidebar via IWorkbenchLayoutService after startup. Flags are independent.
+
+Hard-coded Python/Jupyter configurationDefaults for IDE drops:
+- python.defaultInterpreterPath: /usr/local/bin/python3
+- jupyter.kernels.excludePythonEnvironments: /usr/bin/python3, /bin/python3
 --- a/lib/vscode/src/vs/base/common/product.ts
 +++ b/lib/vscode/src/vs/base/common/product.ts
 @@ -66,6 +66,8 @@ export interface IProductConfiguration {
@@ -103,11 +107,11 @@ sidebar via IWorkbenchLayoutService after startup. Flags are independent.
  			productConfiguration,
 -			callbackRoute: callbackRoute
 +			callbackRoute: callbackRoute,
-+			...(openDefaultNotebook ? {
-+				configurationDefaults: {
-+					'workbench.startupEditor': 'none',
-+				},
-+			} : {}),
++			configurationDefaults: {
++				'python.defaultInterpreterPath': '/usr/local/bin/python3',
++				'jupyter.kernels.excludePythonEnvironments': ['/usr/bin/python3', '/bin/python3'],
++				...(openDefaultNotebook ? { 'workbench.startupEditor': 'none' } : {}),
++			},
 +			...(notebookUri ? {
 +				defaultLayout: {
 +					force: true,
@@ -148,7 +152,7 @@ sidebar via IWorkbenchLayoutService after startup. Flags are independent.
  	private checkUpdates(updateEndpoint: string) {
 --- a/lib/vscode/src/vs/code/browser/workbench/workbench.ts
 +++ b/lib/vscode/src/vs/code/browser/workbench/workbench.ts
-@@ -589,7 +589,24 @@ class WorkspaceProvider implements IWorkspaceProvider {
+@@ -589,7 +589,24 @@ class WorkspaceProvider implements IWork
  	if (!configElement || !configElementAttribute) {
  		throw new Error('Missing web configuration element');
  	}
